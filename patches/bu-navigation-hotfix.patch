@@ -1,0 +1,149 @@
+diff --git bu-navigation.php bu-navigation.php
+index d2cd095..681891b 100644
+--- bu-navigation.php
++++ bu-navigation.php
+@@ -5,7 +5,7 @@ Plugin URI: http://developer.bu.edu/bu-navigation/
+ Author: Boston University (IS&T)
+ Author URI: http://sites.bu.edu/web/
+ Description: Provides alternative navigation elements designed for blogs with large page counts
+-Version: 1.1
++Version: 1.1.1
+ Text Domain: bu-navigation
+ Domain Path: /languages
+ */
+@@ -59,7 +59,7 @@ class BU_Navigation_Plugin {
+ 	// Plugin settings
+ 	public $settings;
+ 
+-	const VERSION = '1.1';
++	const VERSION = '1.1.1';
+ 
+ 	public function __construct() {
+ 
+diff --git extras/bu-navigation-exclude.php extras/bu-navigation-exclude.php
+index e565c23..dccaf0a 100644
+--- extras/bu-navigation-exclude.php
++++ extras/bu-navigation-exclude.php
+@@ -18,19 +18,21 @@ function bu_navigation_filter_pages_exclude( $pages ) {
+ 	if ( is_array( $pages ) && count( $pages ) > 0 ) {
+ 
+ 		$ids = array_keys( $pages );
+-		$query = sprintf( "SELECT post_id, meta_value FROM %s WHERE meta_key = '%s' AND post_id IN (%s) AND meta_value = '0'",
++		$query = sprintf( "SELECT post_id, meta_value FROM %s WHERE meta_key = '%s' AND post_id IN (%s) AND meta_value != '0'",
+ 			$wpdb->postmeta,
+ 			BU_NAV_META_PAGE_EXCLUDE,
+ 			implode( ',', $ids )
+ 			);
+-		$visible = $wpdb->get_results( $query, OBJECT_K );
++		$exclusions = $wpdb->get_results( $query, OBJECT_K );
+ 
+-		if ( is_array( $visible ) && count( $visible ) > 0 ) {
++		if ( is_array( $exclusions ) && count( $exclusions ) > 0 ) {
+ 			foreach ( $pages as $page ) {
+-				if ( array_key_exists( $page->ID, $visible ) ) {
++				if ( ! array_key_exists( $page->ID, $exclusions ) ) {
+ 					$filtered[ $page->ID ] = $page;
+ 				}
+ 			}
++		} else {
++			$filtered = $pages;
+ 		}
+ 	}
+ 
+diff --git includes/class-tree-view.php includes/class-tree-view.php
+index 3b50f53..77abce5 100644
+--- includes/class-tree-view.php
++++ includes/class-tree-view.php
+@@ -287,9 +287,7 @@ class BU_Navigation_Tree_View {
+ 
+ 		if( BU_NAVIGATION_LINK_POST_TYPE == $post->post_type ) {
+ 			$p['metadata']['post']['post_content'] = $post->post_content;
+-			$p['metadata']['post']['post_meta'] = array(
+-				BU_NAV_META_TARGET => $post->target
+-				);
++			$p['metadata']['post']['post_meta'][BU_NAV_META_TARGET] = $post->target;
+ 		}
+ 
+ 		if( $has_children ) {
+@@ -412,25 +410,24 @@ class BU_Navigation_Tree_Query {
+ 
+ 		$filtered = array();
+ 
+-		if( is_array( $posts ) && count( $posts ) > 0 ) {
++		if ( is_array( $posts ) && count( $posts ) > 0 ) {
+ 
+-			// Bulk fetch navigation exclusions data for passed posts
+ 			$ids = array_keys( $posts );
+-			$query = sprintf("SELECT post_id, meta_value FROM %s WHERE meta_key = '%s' AND post_id IN (%s) AND meta_value = '0'",
++			$query = sprintf( "SELECT post_id, meta_value FROM %s WHERE meta_key = '%s' AND post_id IN (%s) AND meta_value != '0'",
+ 				$wpdb->postmeta,
+ 				BU_NAV_META_PAGE_EXCLUDE,
+ 				implode( ',', $ids )
+ 				);
+-			$visible = $wpdb->get_results( $query, OBJECT_K );
+-
+-			if ( ! is_array( $visible ) ) {
+-				$visible = array();
+-			}
++			$exclusions = $wpdb->get_results( $query, OBJECT_K );
+ 
++			if ( ! is_array( $exclusions ) )
++				$exclusions = array();
++			
+ 			foreach ( $posts as $post ) {
+-				$post->excluded = ( array_key_exists( $post->ID, $visible ) ) ? false : true;
++				$post->excluded = ( array_key_exists( $post->ID, $exclusions ) ) ? true : false;
+ 				$filtered[ $post->ID ] = $post;
+ 			}
++			
+ 		}
+ 
+ 		return apply_filters( 'bu_nav_tree_view_filter_posts', $filtered );
+diff --git readme.md readme.md
+index 9cd7cf4..a269032 100644
+--- readme.md
++++ readme.md
+@@ -3,7 +3,7 @@
+ **Tags:** navigation, hierarchical, post type, boston university, bu
+ **Requires at least:** 3.1
+ **Tested up to:** 3.5
+-**Stable tag:** 1.1
++**Stable tag:** 1.1.1
+ **License:** GPLv2 or later
+ **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
+ 
+@@ -86,6 +86,10 @@ Please see this page for the details:
+ 
+ ## Changelog ##
+ 
++### 1.1.1 ###
++
++* Hotfix - Fixed bug that was causing external links to be hidden in navigaiton lists
++
+ ### 1.1 ###
+ 
+ * Initial WP.org release
+diff --git readme.txt readme.txt
+index 2f14ff7..4f9b713 100644
+--- readme.txt
++++ readme.txt
+@@ -3,7 +3,7 @@ Contributors: ntk, mgburns, gcorne
+ Tags: navigation, hierarchical, post type, boston university, bu
+ Requires at least: 3.1
+ Tested up to: 3.5
+-Stable tag: 1.1
++Stable tag: 1.1.1
+ License: GPLv2 or later
+ License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ 
+@@ -76,6 +76,10 @@ Please see this page for the details:
+ 
+ == Changelog ==
+ 
++= 1.1.1 =
++
++* Hotfix - Fixed bug that was causing external links to be hidden in navigaiton lists
++
+ = 1.1 =
+ 
+ * Initial WP.org release
