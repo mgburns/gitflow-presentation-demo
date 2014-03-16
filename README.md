@@ -2,30 +2,30 @@
 
 This directory contains files for use demonstrating Git Flow in action with the [BU Navigation plugin](https://github.com/bu-ist/bu-navigation).
 
-##  Goals
+### Goals
 
 * To demonstrate the use of "hotfix" branches by fixing a bug with navigation links.
 * To demonstrate the use of "feature" branches by adding support for "Private" posts in administrative navigation views.
 
-Both the hotfix and feature have already been implemented in the official repository. This directory contains altered versions of the plugin which have been `git reset --hard` to points in time prior to the changes for the purpose of this presentation.
+Both have already been implemented in the official repository. This directory contains modified versions of the plugin repository which have been `git reset --hard` to earlier commits for the purpose of this presentation.
 
-Their are two directories -- plugins-before and plugins-after. The former contains the starting point, the latter contains the end result. The procedure that takes each from before to after is detailed below.
+There are two directories -- `plugins-before` and `plugins-after`. The former contains the starting point, the latter contains the end result. The procedures that take each from before to after are detailed below.
 
-## Plugin Versions
+### Plugin Versions
 
 * bu-navigation-hotfix -- A version of the plugin in need of a hotfix for a bug that is causing external links to be excluded from navigation links.
 * bu-navigation-feature -- A version of the plugin prior to the additon of private post type support in administrative navigation views.
 * bu-navigation-feature-with-merge-conflicts -- Same as above, but with a different branch point for feature/private-posts that introduces a merge conflict upon reintegration with develop.
 
-## Patches
+### Patches
 
-The "patches" directory adjacent to this README contains three seperate patch files that can be applied to simulate development of each feature / hotfix.  The patches are named after the plugin directory they are intended to be applied to.
+The `patches` directory adjacent to this README contains three separate patch files that can be applied to simulate development of each feature / hotfix. The patches are named after the plugin directory they are intended to be applied to.
 
 ## Hot Fix
 
-**Directory**: plugins-before/bu-navigation-hotfix
-**Patch**: patches/bu-navigation-hotfix.patch
-**Starting commit**: 1.1 (master)
+* **Directory**: plugins-before/bu-navigation-hotfix
+* **Patch**: patches/bu-navigation-hotfix.patch
+* **Starting commit**: 1.1 (master)
 
 ### Background
 
@@ -85,9 +85,9 @@ Next step?  Add unit test coverage.
 
 ## Feature
 
-**Directory**: plugins-before/bu-navigation-feature
-**Patch**: patches/bu-navigation-feature.patch
-**Starting commit**: 145e6059a3 (develop)
+* **Directory**: plugins-before/bu-navigation-feature
+* **Patch**: patches/bu-navigation-feature.patch
+* **Starting commit**: 145e6059a3 (develop)
 
 ### Background
 
@@ -127,9 +127,9 @@ $ git branch -d feature/private-posts     # Delete after re-integration, no long
 
 ## Feature w/ Merge Conflict
 
-**Directory**: plugins-before/bu-navigation-feature-merge-conflicts
-**Patch**: patches/bu-navigation-feature-merge-conflicts.patch
-**Starting commit**: 24203d5e77
+* **Directory**: plugins-before/bu-navigation-feature-merge-conflicts
+* **Patch**: patches/bu-navigation-feature-merge-conflicts.patch
+* **Starting commit**: 24203d5e77
 
 ### Background
 
